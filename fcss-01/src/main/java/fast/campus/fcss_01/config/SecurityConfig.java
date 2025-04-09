@@ -9,20 +9,21 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
 
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
-//        UserDetails danny = User.builder().username("danny").password("password").build();
-//        inMemoryUserDetailsManager.createUser(danny);
-//        return inMemoryUserDetailsManager;
-//    }
+    @Bean
+    public UserDetailsService userDetailsService(DataSource dataSource) {
+        return new JdbcUserDetailsManager(dataSource);
+    }
 
+    /* InMemory 방법 활용 */
+    /*
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails danny = User.withUsername("danny.kim")
@@ -37,6 +38,7 @@ public class SecurityConfig {
         List<UserDetails> users = List.of(danny, steve, harris);
         return new InMemoryUserDetailService(users);
     }
+    */
 
     @Bean
     public PasswordEncoder passwordEncoder() {
