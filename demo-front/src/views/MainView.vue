@@ -1,32 +1,34 @@
 <template>
   <v-container>
-    <h2>USER/MAIN/ADMIN 페이지</h2>
+    <h2>페이지</h2>
     <v-btn @click="loadData">API 호출</v-btn>
     <p>{{ result }}</p>
   </v-container>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 
-export default {
-  data() {
-    return { result: '' }
-  },
-  methods: {
-    async loadData() {
-      try {
-        const path = this.$route.path
-        const res = await axios.get('/api' + path)
-        this.result = res.data
-      } catch (e) {
-        if (e.response.status === 401 || e.response.status === 403) {
-          this.$router.push('/login')
-        } else {
-          this.result = '오류 발생'
-        }
-      }
+const result = ref('')
+const route = useRoute()
+const router = useRouter()
+
+const loadData = async () => {
+  try {
+    const res = await axios.get('/api' + route.path)
+    result.value = res.data
+  } catch (e) {
+    if (e.response?.status === 401 || e.response?.status === 403) {
+      router.push('/login')
+    } else {
+      result.value = '오류 발생'
     }
   }
 }
+
+onMounted(() => {
+  loadData()
+})
 </script>
