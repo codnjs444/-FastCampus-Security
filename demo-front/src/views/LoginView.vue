@@ -18,10 +18,12 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router'; // ✅ useRoute 추가
 import axios from 'axios';
 
 const router = useRouter();
+const route = useRoute(); // ✅ 현재 라우터 정보 사용
+
 const form = ref({
   username: '',
   password: ''
@@ -41,7 +43,9 @@ const submit = async () => {
     });
 
     alert('로그인 성공');
-    router.push({ name: 'home' });
+
+    const redirectPath = route.query.redirect || '/'; // ✅ 정의된 route 사용
+    router.push(redirectPath);
   } catch (err) {
     alert('로그인 실패: 아이디 또는 비밀번호를 확인하세요.');
   }
