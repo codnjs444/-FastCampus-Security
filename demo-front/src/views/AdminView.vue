@@ -7,24 +7,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref } from 'vue';
 
-const authorized = ref(false);
-const router = useRouter();
-
-onMounted(async () => {
-  try {
-    await axios.get('/api/admin', { withCredentials: true });
-    authorized.value = true;
-  } catch (e) {
-    if (e.response?.status === 401) {
-      router.push({ name: 'login', query: { redirect: '/admin' } });
-    } else {
-      alert('권한이 없습니다.');
-      router.push({ name: 'home' });
-    }
-  }
-});
+// 👇 authorized 상태는 외부에서 전달되거나 기본값 true로 설정 가능
+const authorized = ref(true); // 어차피 라우터 가드에서 걸러짐
 </script>

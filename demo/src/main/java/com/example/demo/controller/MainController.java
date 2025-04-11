@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +39,7 @@ public class MainController {
     }
 
     @GetMapping("/admin")
-    public String admin() {
+    public String admin(Model model) {
         // 현재 로그인한 사용자 ID (username)
         String id = SecurityContextHolder.getContext().getAuthentication().getName();
         System.out.println("✅ 로그인한 사용자 ID: " + id);
@@ -50,6 +51,9 @@ public class MainController {
         for (GrantedAuthority authority : authorities) {
             System.out.println("✅ 권한: " + authority.getAuthority());
         }
+
+        model.addAttribute("id", id);
+        model.addAttribute("authorities", authorities);
 
         return "🛠 관리자 페이지";
     }
