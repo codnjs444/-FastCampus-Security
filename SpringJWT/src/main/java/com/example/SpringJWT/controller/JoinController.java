@@ -4,10 +4,8 @@ import com.example.SpringJWT.dto.JoinDTO;
 
 import com.example.SpringJWT.service.JoinService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -22,5 +20,8 @@ public class JoinController {
         return "회원가입 완료";
     }
 
-
+    @GetMapping("/login")
+    public ResponseEntity<String> loginPage() {
+        return ResponseEntity.ok("🔐 프론트엔드 로그인 페이지 경로");
+    }
 }
