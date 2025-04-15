@@ -1,5 +1,6 @@
 package com.example.SpringJWT.config;
 
+import com.example.SpringJWT.jwt.JWTUtil;
 import com.example.SpringJWT.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -32,26 +34,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
+        loginFilter.setFilterProcessesUrl("/api/login"); // ✅ 여기 추가됨
+
         http
-                .csrf(csrf -> csrf.disable());
-        http
-                .formLogin((auth) -> auth.disable());
-        http
-                .httpBasic((auth) -> auth.disable());
-        http
-                .authorizeHttpRequests((auth) -> auth
+                .csrf(csrf -> csrf.disable())
+                .formLogin(auth -> auth.disable())
+                .httpBasic(auth -> auth.disable())
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html", "/api/test", "/api/login", "/api/join").permitAll()
                         .requestMatchers("/api/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                );
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class); // ✅ 여기도 loginFilter 객체로 변경
 
-        // 세션 관리 설정 (API 서버는 Stateless)
-        http
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 }
